@@ -14,11 +14,11 @@ def create_random_str() -> str:
 def check_right_str() -> bool:
     player_str = input("Введите строку, чтобы угадать загаданную: ")
     l = [int(i) for i in player_str if i.isdigit()]
-    if len(set(l)) == 4:
+    if len(set(l)) == len(player_str):
         return player_str
     else:
         print('Введите корректные данные')
-        return check_right_str(player_str)
+        return check_right_str()
 
 def check_positions(main_str: str, check_str: str) -> tuple:
     bulls, cows = 0, 0
