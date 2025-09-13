@@ -1,4 +1,4 @@
 # FinUniversityGames
 Студенты: Алексеенко Денис, Верещагин Илья, Харченко Никита <br>
-Группа: ТРПО25-2
+Группа: ТРПО25-2 <br>
 1st seminar homework/classwork create simple terminal games
