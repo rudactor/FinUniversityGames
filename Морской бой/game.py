@@ -1,8 +1,16 @@
 from random import randint
+from string import printable
 
 def print_field(board):
-    for i in board:
-        print(*i)
+    print("  ", *printable[10:20])
+    for index, element in enumerate(board):
+        if index + 1 != 10:
+            print(index + 1, "",*element)
+        else:
+            print(index + 1, *element)
+
+def init_board_secure():
+    return [["#"] * 10 for _ in range(10)]
 
 def init_board():
     cnter = 0
@@ -15,8 +23,7 @@ def init_board():
         column = index % 10
         direction = "H" if randint(0, 1) == 0 else "V"
         if place_ship(board, column, row, 1):
-            i+=1
-            cnter += 1
+            i += 1
             
     i = 0
             
@@ -26,8 +33,7 @@ def init_board():
         column = index % 10
         direction = "H" if randint(0, 1) == 0 else "V"
         if place_ship(board, column, row, 2, direction):
-            i+=1
-            cnter += 1
+            i += 1
             
     i = 0
             
@@ -37,8 +43,7 @@ def init_board():
         column = index % 10
         direction = "H" if randint(0, 1) == 0 else "V"
         if place_ship(board, column, row, 3, direction):
-            i+=1
-            cnter += 1
+            i += 1
             
     i = 0
             
@@ -48,10 +53,10 @@ def init_board():
         column = index % 10
         direction = "H" if randint(0, 1) == 0 else "V"
         if place_ship(board, column, row, 4, direction):
-            i+=1
+            i += 1
             cnter += 1
         
-    print_field(board)
+    return board
         
 def place_ship(board, x, y, length, direction = 'H'):
     if board[x][y] != '*' and is_place_free(board, x, y, length, direction):
@@ -90,4 +95,8 @@ def is_place_free(board, x, y, length, direction = 'H'):
                     return False
     return True
     
-init_board()
+board_with_ships = init_board()
+board_secure = init_board_secure()
+
+print_field(board_secure)
+print_field(board_with_ships)
