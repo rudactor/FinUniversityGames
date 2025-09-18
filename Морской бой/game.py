@@ -12,6 +12,26 @@ def print_field(board):
 def init_board_secure():
     return [["#"] * 10 for _ in range(10)]
 
+def ask_for_move() -> tuple:
+    move = input("Сделайте следующий ход: ")
+    try:
+        letter = "".join([ch for ch in move if ch.isalpha()])
+        digit = int("".join([ch for ch in move if ch.isdigit()]))
+        if len(letter)==1 and (len(str(digit))==1 or digit == 10):
+            pass
+        else:
+            print("Вы ввели неправильные координаты. Попробуйте еще раз.")
+            return ask_for_move()
+    except:
+        print("Вы ввели неправильные координаты. Попробуйте еще раз.")
+        return ask_for_move()
+
+    if (not letter or not digit) or (letter < "a" or letter > "j") or (digit < 1 or digit > 10):
+        print("Вы ввели неправильные координаты. Попробуйте еще раз.")
+        return ask_for_move()
+    else:
+        return digit, return_number_columns(letter)
+
 def return_number_columns(letter) -> dict:
     dict = {printable[10:20][i]: i for i in range(10)}
     return dict[letter]
@@ -74,29 +94,52 @@ def place_ship(board, x, y, length, direction = 'H'):
     return False
         
 def shoot(board, board_security, x, y):
-    if board[x - 1][y] == '*' and check_cells(board, x, y):
-        print("Убил")
-        return True
-    elif board[x - 1][y] == '*' and not check_cells(board, x, y):
-        print("Попал")
-        return True
-    elif board_security[x - 1][y] == '.' or board_security[x - 1][y] == 'X':
+    if board_security[x - 1][y] in ('.', 'X'):
         print("Вы уже туда стреляли")
         return "was"
-    elif board[x - 1][y] == '.':
+
+    if board[x - 1][y] == '*':
+        board[x - 1][y] = 'X'
+        board_security[x - 1][y] = 'X'
+
+        if check_cells(board, x, y):
+            print("Корабль убит")
+            return "kill"
+        else:
+            print("Попал")
+            return "hit"
+
+    if board[x - 1][y] == '.':
+        board_security[x - 1][y] = '.'
         print("Мимо")
-        return False
+        return "miss"
         
 def check_cells(board, x, y):
-    for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
-        if board[x + dx - 1][y + dy] == "*":
-            return False
+    rows, cols = len(board), len(board[0])
+    stack = [(x-1, y)]
+    visited = set()
+
+    while stack:
+        cx, cy = stack.pop()
+        if (cx, cy) in visited:
+            continue
+        visited.add((cx, cy))
+
+        if 0 <= cx < rows and 0 <= cy < cols:
+            if board[cx][cy] == '*':   
+                return False           
+            elif board[cx][cy] == 'X':
+                stack.extend([
+                    (cx-1, cy), (cx+1, cy),
+                    (cx, cy-1), (cx, cy+1)
+                ])
+
     return True
         
 def check_win(board):
     cnter = 0
     for lst in board:
-        cnter += board.count("X")
+        cnter += lst.count("X")
     
     if cnter == 20:
         return True
@@ -131,19 +174,17 @@ board_with_ships = init_board()
 board_secure = init_board_secure()
 
 print_field(board_secure)
-print_field(board_with_ships)
 
 while True:
-    inp = input("Введите координаты хода: ").split()
-    x, y = int(inp[0]), return_number_columns(str(inp[1]))
+    x, y = ask_for_move()
     
-    if shoot(board_with_ships, board_secure, x, y) == 'was':
-        print("Вы уже туда стреляли")
+    result = shoot(board_with_ships, board_secure, x, y)
+
+    if result == "was":
         continue
-    elif shoot(board_with_ships, board_secure, x, y):
-        board_secure[x - 1][y] = 'X'
-    elif not shoot(board_with_ships, board_secure, x, y):
-        board_secure[x - 1][y] = '.'
     
     print_field(board_secure)
-    print_field(board_with_ships)
+    
+    if check_win(board_secure):
+        print("Вы победили!")
+        break
