@@ -82,7 +82,7 @@ def shoot(board, board_security, x, y):
         return True
     elif board_security[x - 1][y] == '.' or board_security[x - 1][y] == 'X':
         print("Вы уже туда стреляли")
-        return shoot(board, board_security, x, y)
+        return "was"
     elif board[x - 1][y] == '.':
         print("Мимо")
         return False
@@ -92,6 +92,15 @@ def check_cells(board, x, y):
         if board[x + dx - 1][y + dy] == "*":
             return False
     return True
+        
+def check_win(board):
+    cnter = 0
+    for lst in board:
+        cnter += board.count("X")
+    
+    if cnter == 20:
+        return True
+    return False
         
 def is_place_free(board, x, y, length, direction = 'H'):
     n = len(board)
@@ -128,7 +137,10 @@ while True:
     inp = input("Введите координаты хода: ").split()
     x, y = int(inp[0]), return_number_columns(str(inp[1]))
     
-    if shoot(board_with_ships, board_secure, x, y):
+    if shoot(board_with_ships, board_secure, x, y) == 'was':
+        print("Вы уже туда стреляли")
+        continue
+    elif shoot(board_with_ships, board_secure, x, y):
         board_secure[x - 1][y] = 'X'
     elif not shoot(board_with_ships, board_secure, x, y):
         board_secure[x - 1][y] = '.'
