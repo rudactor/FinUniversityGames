@@ -1,5 +1,6 @@
 from string import printable
 
+
 def print_rules() -> str:
     return """
 Игра ведётся на игровом поле размером 10 на 10 клеток. 
@@ -9,6 +10,7 @@ def print_rules() -> str:
 фишек как бы нет хозяина. Цепочка — это ряд фишек, следующая фишка в котором примыкает к 
 предыдущей с любого из восьми направлений.
     """
+
 
 def print_matrix(matrix) -> None:
     print("  ", *printable[10:20])
@@ -21,25 +23,34 @@ def print_matrix(matrix) -> None:
 def create_matrix() -> list:
     return [[0] * 10 for _ in range(10)]
 
+
 def return_number_columns(letter) -> dict:
     dict = {printable[10:20][i]: i for i in range(10)}
     return dict[letter]
 
-def search_needable_elements(moves, row, column, matrix) -> bool:
-    for i in moves:
-        if row + i[0] * 2 <= 9 and column + i[1] * 2 <= 9 and row + i[0] * 2 >= 0 and column + i[1] * 2 >= 0:
-            if matrix[row + i[0]][column + i[1]] == 1:
-                if matrix[row + i[0] * 2][column + i[1] * 2] == 1:
-                    return True
+
+def check_winner(matrix, row, col) -> bool:
+    directions = [(0, 1), (1, 0), (1, 1), (1, -1)]
+    n = 10
+
+    for dr, dc in directions:
+        count = 1
+        r, c = row + dr, col + dc
+        while 0 <= r < n and 0 <= c < n and matrix[r][c] == 1:
+            count += 1
+            r += dr
+            c += dc
+        r, c = row - dr, col - dc
+        while 0 <= r < n and 0 <= c < n and matrix[r][c] == 1:
+            count += 1
+            r -= dr
+            c -= dc
+
+        if count >= 3:
+            return True
+
     return False
 
-def check_winner(matrix, row, column) -> bool:
-    moves = [
-        [-1, -1], [-1, 0], [-1, 1],
-        [0, -1], [0, 1],
-        [1, -1],  [1, 0],  [1, 1],
-    ]
-    return search_needable_elements(moves, row, column, matrix)
 
 def check_board_full(matrix):
     for i in range(len(matrix)):
@@ -48,11 +59,13 @@ def check_board_full(matrix):
                 return False
     return True
 
+
 def change_move(player) -> int:
     if player == 1:
         return 0
     else:
         return 1
+
 
 def ask_for_move() -> tuple:
     move = input("Сделайте следующий ход: ")
@@ -78,6 +91,7 @@ def ask_for_move() -> tuple:
     else:
         return digit, letter
 
+
 matrix = create_matrix()
 player = 0
 
@@ -86,6 +100,7 @@ print(print_rules())
 
 name_first = input("Введите имя первого игрока: ")
 name_second = input("Введите имя второго игрока: ")
+
 
 while True:
     current_name = name_first if player == 0 else name_second
@@ -99,7 +114,7 @@ while True:
     print_matrix(matrix)
     
     if check_winner(matrix, row_number - 1, column_number):
-        print(f"Игрок {current_name} выйграл")
+        print(f"Игрок {current_name} проиграл")
         break
     
     if check_board_full(matrix):
@@ -107,5 +122,3 @@ while True:
         break
 
     player = change_move(player)
-    
-    
