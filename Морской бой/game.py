@@ -12,6 +12,10 @@ def print_field(board):
 def init_board_secure():
     return [["#"] * 10 for _ in range(10)]
 
+def return_number_columns(letter) -> dict:
+    dict = {printable[10:20][i]: i for i in range(10)}
+    return dict[letter]
+
 def init_board():
     cnter = 0
     i = 0
@@ -69,6 +73,25 @@ def place_ship(board, x, y, length, direction = 'H'):
         return True
     return False
         
+def shoot(board, board_security, x, y):
+    if board[x - 1][y] == '*' and check_cells(board, x, y):
+        print("Убил")
+        return True
+    elif board[x - 1][y] == '*' and not check_cells(board, x, y):
+        print("Попал")
+        return True
+    elif board_security[x - 1][y] == '.' or board_security[x - 1][y] == 'X':
+        print("Вы уже туда стреляли")
+        return shoot(board, board_security, x, y)
+    elif board[x - 1][y] == '.':
+        print("Мимо")
+        return False
+        
+def check_cells(board, x, y):
+    for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+        if board[x + dx - 1][y + dy] == "*":
+            return False
+    return True
         
 def is_place_free(board, x, y, length, direction = 'H'):
     n = len(board)
@@ -100,3 +123,15 @@ board_secure = init_board_secure()
 
 print_field(board_secure)
 print_field(board_with_ships)
+
+while True:
+    inp = input("Введите координаты хода: ").split()
+    x, y = int(inp[0]), return_number_columns(str(inp[1]))
+    
+    if shoot(board_with_ships, board_secure, x, y):
+        board_secure[x - 1][y] = 'X'
+    elif not shoot(board_with_ships, board_secure, x, y):
+        board_secure[x - 1][y] = '.'
+    
+    print_field(board_secure)
+    print_field(board_with_ships)
