@@ -1,6 +1,9 @@
 from random import randint
 from string import printable
 
+def print_rules():
+    print(" первым уничтожить все корабли оппонента. Игра проводится на двух полях 10x10 клеток, корабли располагаются вертикально или горизонтально, не касаясь друг друга, и каждый ход на чужом поле помечается как 'попал' или 'промахнулся'")
+
 def print_field(board):
     print("  ", *printable[10:20])
     for index, element in enumerate(board):
@@ -173,6 +176,7 @@ def is_place_free(board, x, y, length, direction = 'H'):
 board_with_ships = init_board()
 board_secure = init_board_secure()
 
+print_rules()
 print_field(board_secure)
 
 while True:
