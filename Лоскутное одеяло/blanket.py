@@ -21,6 +21,23 @@ def return_number_columns(letter) -> dict:
     dict = {printable[10:15][i]: i for i in range(5)}
     return dict[letter]
 
+def check_cells(board, x, y, cell):
+    cnter = 0
+    moves = [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, 1), (-1, 1)]
+    for i in moves:
+        if x + i[0] - 1 <= 3 and x + i[0] - 1 >= 0 and y + i[1] >= 0 and y + i[1] <= 4:
+            if board[x - 1 + i[0]][y + i[1]] == cell:
+                cnter += 1
+    return cnter
+            
+
+def check_full_board(board):
+    for i in range(len(board)):
+        for j in range(len(board[i])):
+            if board[i][j] == '.':
+                return False
+    return True
+
 def ask_for_move() -> tuple:
     move = input("Сделайте следующий ход: ")
     try:
@@ -35,8 +52,8 @@ def ask_for_move() -> tuple:
         print("Вы ввели неправильные координаты. Попробуйте еще раз.")
         return ask_for_move()
 
-    if (not letter or not digit) or (letter < "a" or letter > "j") or (digit < 1 or digit > 10) or (board[digit - 1][return_number_columns(letter)] == 1):
-        if board[digit - 1][return_number_columns(letter)] == 1:
+    if (not letter or not digit) or (letter < "a" or letter > "j") or (digit < 1 or digit > 10) or (board[digit - 1][return_number_columns(letter)] != '.'):
+        if board[digit - 1][return_number_columns(letter)] == '.':
             print("Данная ячейка уже занята. Попробуйте еще раз")
             return ask_for_move()
         else:
@@ -53,11 +70,13 @@ third_name = str(input("Введите имя третьего игрока: "))
 
 player_number = 0
 
+cnter_moves = [0, 0, 0]
+
 print_board(board)
 
 while True:
     current_name = first_name if player_number == 0 else second_name if player_number == 1 else third_name
-    move = "X" if player_number == 0 else 'Y' if player_number == 1 else 'O'
+    move = "X" if player_number == 0 else 'Y' if player_number == 1 else 'Z'
     
     print(f"Ход игрока под именем {current_name}")
     x, y = ask_for_move()
@@ -66,6 +85,14 @@ while True:
     
     print_board(board)
     
+    cnter_moves[player_number] += check_cells(board, x, y, move)
+    
+    if check_full_board(board):
+        number_lose = cnter_moves.index(max(cnter_moves))
+        current_name = first_name if number_lose == 0 else second_name if number_lose == 1 else third_name
+        print(f"Игрок {current_name} проиграл")
+        break
+        
     player_number = change_move(player_number)
     
     
