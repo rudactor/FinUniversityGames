@@ -35,7 +35,7 @@ def check_move_is_full(matrix, digit, letter) -> bool:
         if col_idx < 0 or col_idx >= len(matrix[row_idx]):
             return False
         return matrix[row_idx][col_idx] != '.'
-    except Exception:
+    except:
         return False
 
 
@@ -134,8 +134,12 @@ def check_move_is_correct(mtrx):
         return check_move_is_correct(mtrx)
 
 
-def check_winner():
-    pass
+def check_winner() -> bool:
+    for i in range(len(matrix)):
+        for j in range(len(matrix[i])):
+            if matrix[i][j] != '.':
+                return False
+    return True
 
 matrix = create_board()
 show_board(matrix)
